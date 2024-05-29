@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        background: #f1f4f6;
+        font-family: "Roboto", sans-serif;
+      }
+      .app-header.header-shadow {
+        box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03),
+          0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03),
+          0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05),
+          0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+      }
+      header {
+        background: #fafbfc;
+        box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03),
+          0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03),
+          0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05),
+          0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+      }
+      .sidebar {
+        padding: 1rem 0.5rem;
+        transition: width 0.4s ease-in-out, opacity 0.7s ease-in-out,
+          padding 0.5s ease-in-out;
+        background: #fff;
+        width: 300px;
+        opacity: 1;
+      }
+      .searchbar {
+        max-width: 400px;
+        scale: 1;
+        transition: all 0.35s ease-in, opacity 0.1s ease-in;
+        opacity: 1;
+        overflow: hidden;
+      }
+      .searchbar-closed {
+        width: 0px;
+        margin: 0;
+        padding: 0;
+        /* scale: 0.9; */
+        scale: 0;
+        opacity: 0;
+        overflow: hidden;
+      }
+      .sidebarclosed {
+        width: 0;
+        opacity: 0;
+        overflow: hidden;
+        height: 0;
+        margin: 0;
+        padding: 0;
+      }
+      .sidebar-heading {
+        font-weight: 700;
+        color: #3f6ad8;
+        white-space: nowrap;
+      }
+      .sidebar-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      ul {
+        list-style: none;
+      }
+      .sidebar-normal-item {
+        margin-left: 20px;
+      }
+      .inner-content {
+        flex: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div x-data="{sidebarOpen: true}">
+      <header class="d-flex gap-4 px-4 sticky-top">
+        <div
+          style="width: 220px"
+          class="d-flex align-items-center justify-content-between"
+        >
+          <h4>LOGO HERE</h4>
+          <button
+            x-on:click="sidebarOpen = !sidebarOpen"
+            style="border: none"
+            class="btn btn-outline-secondary rounded-circle"
+          >
+            <i class="bi bi-list h6"></i>
+          </button>
+        </div>
+        <div
+          style="flex: 1"
+          class="d-flex justify-content-between align-items-center"
+          x-data="{searchOpen: false}"
+        >
+          <div class="d-flex gap-2">
+            <div
+              x-show="searchOpen"
+              x-transition:enter-start="searchbar-closed"
+              x-transition:leave-end="searchbar-closed"
+              class="input-group searchbar"
+            >
+              <input class="form-control" type="text" />
+              <button class="btn btn-outline-primary">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+            <button
+              style="background: none; border: none"
+              x-on:click="searchOpen = !searchOpen"
+            >
+              <i x-show="!searchOpen" class="bi bi-search"></i>
+              <i x-show="searchOpen" class="bi bi-x-lg"></i>
+            </button>
+          </div>
+
+          <div class="d-flex justify-content-between gap-2">
+            <img />
+            <div>
+              <p>name</p>
+              <p>title</p>
+            </div>
+          </div>
+        </div>
+      </header>
+      <div class="d-flex">
+        <div
+          class="sidebar gap-4 shadow-sm"
+          style="height: 100vh; display: flex; flex-direction: column"
+          x-show="sidebarOpen"
+          x-transition:enter-start="sidebarclosed"
+          x-transition:leave-end="sidebarclosed"
+        >
+          <ul class="sidebar-container">
+            <li class="sidebar-heading">Dashboard</li>
+            <li class="sidebar-normal-item">Home</li>
+            <li class="sidebar-normal-item">Onboarding</li>
+            <li class="sidebar-normal-item">OffBoarding</li>
+            <li class="sidebar-normal-item">Managae Regions</li>
+            <li class="sidebar-heading">Admin</li>
+            <li class="sidebar-normal-item">Users</li>
+            <li class="sidebar-normal-item">Roles</li>
+            <li class="sidebar-normal-item">Master Lists</li>
+          </ul>
+        </div>
+        <div class="inner-content px-4 py-2">
+          <div>
+            <h2>blah</h2>
+            <h2>
+              <div class="card shadow">
+                <div class="card-header">Featured</div>
+                <div class="card-body">
+                  <h5 class="card-title">Special title treatment</h5>
+                  <p class="card-text">
+                    With supporting text below as a natural lead-in to
+                    additional content.
+                  </p>
+                  <a href="#" class="btn btn-primary">Go somewhere</a>
+                </div>
+              </div>
+            </h2>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function findKeyByValue(obj, value) {
+        return Object.entries(obj).find(([key, val]) => val === value)?.[0];
+      }
+
+      document.addEventListener("alpine:init", () => {
+        Alpine.data("dropdown", () => ({
+          open: false,
+        }));
+      });
+    </script>
+  </body>
+</html>
