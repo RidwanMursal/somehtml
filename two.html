@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body
+    x-data="{languages: [{Id: 1, Value: 'English'}, {Id:2, Value: 'French'}]}"
+  >
+    <div
+      x-data="typeheadSearch"
+      x-on:value-selected="updateSelected($event.detail.id, $event.detail.name)"
+      style="max-width: 500px"
+      class="m-4"
+    >
+      <div class="input-group">
+        <input
+          class="form-control"
+          type="text"
+          x-model="selectedVal"
+          x-on:keyup.arrow-down.stop.prevent="highlightNext()"
+          x-on:keyup.arrow-up.stop.prevent="highlightPrevious()"
+          x-on:keyup.enter.stop.prevent="$dispatch('value-selected', {
+          id: filteredList[highlightedIndex]?.Id,
+          name: filteredList[highlightedIndex]?.Value
+        })"
+          x-on:input.debounce="() => search()"
+        />
+        <input type="hidden" x-model="selectedId" />
+        <button class="btn btn-primary">Add Item</button>
+      </div>
+      <div>
+        <ul
+          x-show="open"
+          x-on:click.outside="open=false"
+          class="list-group"
+          x-ref="results"
+        >
+          <!-- @forelse($results as $index => $result) -->
+          <template x-for="(language,index) in filteredList">
+            <li
+              x-on:click.stop="$dispatch('value-selected', {
+                id: language.Id,
+                name: language.Value
+              })"
+              x-on:mouseover="() => {highlightedIndex = index}"
+              :class="highlightedIndex == index? 'active':''"
+              :data-result-id="language.Id"
+              :data-result-name="language.Value"
+              class="list-group-item autocomplete-item"
+            >
+              <span x-text="language.Value"> </span>
+            </li>
+          </template>
+        </ul>
+      </div>
+    </div>
+    <script>
+      function findKeyByValue(obj, value) {
+        return Object.entries(obj).find(([key, val]) => val === value)?.[0];
+      }
+
+      document.addEventListener("alpine:init", () => {
+        Alpine.data("typeheadSearch", () => ({
+          open: false,
+          id: 1,
+          selectedId: 0,
+          selectedVal: "",
+          highlightedIndex: -1,
+          highlightPrevious() {
+            if (this.highlightedIndex > 0) {
+              this.highlightedIndex = this.highlightedIndex - 1;
+              this.scrollIntoView();
+            }
+          },
+          highlightNext() {
+            console.log("hey in next ", this.highlightedIndex);
+            console.log("ho ", this.$refs.results);
+            if (this.highlightedIndex < this.filteredList.length - 1) {
+              this.highlightedIndex = this.highlightedIndex + 1;
+              this.scrollIntoView();
+            }
+          },
+          scrollIntoView() {
+            this.$refs.results.children[this.highlightedIndex].scrollIntoView({
+              block: "nearest",
+              behavior: "smooth",
+            });
+          },
+          updateSelected(id, name) {
+            if (this.highlightedIndex == -1) return;
+            this.selected = id;
+            this.selectedVal = name;
+            this.open = false;
+            this.highlightedIndex = 0;
+            this.selectedId = id;
+          },
+          search() {
+            if (this.selectedVal == "") {
+              this.highlightedIndex = -1;
+              this.open = false;
+              return;
+            }
+            console.log(this.selectedVal);
+            this.filteredList = this.languages.filter((a) =>
+              a.Value.toLowerCase().includes(this.selectedVal.toLowerCase())
+            );
+            this.open = this.filteredList.length > 0;
+            const exactMatches = this.filteredList.filter(
+              (f) => f.Value == this.selectedVal
+            );
+            if (exactMatches.length > 0) this.selectedId = exactMatches[0].Id;
+            else this.selectedId = 100; // Other
+          },
+          filteredList: [{}],
+        }));
+      });
+    </script>
+  </body>
+</html>
